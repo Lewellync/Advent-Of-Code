@@ -1,44 +1,25 @@
+import logging.config
 from pathlib import Path
 from datetime import datetime, timedelta
 import argparse
-import urllib
+import logging
+import json
+from file import FileHelper
 
-# TODO - refactor into util folder
-class FileHelper:
-    @staticmethod
-    def create_dir(self, path: Path):
-        if not path.is_dir():
-            Path.mkdir(path, parents=True)
+WORKING_DIR = Path(__file__).parent
+UTILS_DIR = Path.joinpath(WORKING_DIR, 'aoc_utils')
 
-    @staticmethod
-    def create_file(self, path: Path, delete_empty_directory=False):
-        if not path.is_file():
-            if path.exists() and not path.iterdir() and delete_empty_directory:
-                Path.rmdir(path)
-            else:
-                if delete_empty_directory:
-                    raise FileExistsError('A directory with that name exists and it is not empty')
-        Path.touch(path)
+# configuration stored in file that is loaded
+logging_conf_path = Path.joinpath(WORKING_DIR / 'logging.json')
+with open(logging_conf_path, 'r') as logging_conf:
+    logging_json = json.load(logging_conf)
 
-    # build file structure
-    # year
-    #   day(day_number)
-    #       input.txt answer.py
-    @staticmethod
-    def create_answer_structure(self, path: Path, year, day, input):
-        answer_path = Path.joinpath(WORKING_DIR / year / day)
-        self.create_dir(answer_path)
-        # TODO - create template file for this
-        self.create_file(Path.joinpath(answer_path / 'answer.py'))
-        # TODO - incorporate this into the GET call
-        self.create_file(Path.joinpath(answer_path / 'input.txt'))
+logging.config.dictConfig(logging_json)
+logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(prog='Advent of Code Utilities')
 parser.add_argument('-t', '--testing', action='store_true')
 args = parser.parse_args()
-
-WORKING_DIR = Path(__file__).parent
-UTILS_DIR = Path.joinpath(WORKING_DIR, 'aoc_utils')
 
 DATETIME_FORMAT = r'%y/%m/%d %H:%M:%S'
 PRODUCTION = args.testing
@@ -64,7 +45,7 @@ while True:
             with open(Path.joinpath(UTILS_DIR, time_file_name), 'r+') as timefile:
                 last_run = timefile.read()
                 if last_run and datetime.strptime(last_run, DATETIME_FORMAT) + timedelta(minutes=10) > curr_time:
-                    print(r'!--! RUNNING WITHIN TEN MINUTES !--! DO NOT SPAM !--!')
+                    logger.warning(f'!--! RUNNING TOO OFTEN !--!  !--! DO NOT SPAM !--!')
                     break
                     
                 # it's been 10 minutes, so overwrite the last run time
@@ -78,13 +59,17 @@ while True:
             with open(session_path, 'r', encoding='utf-8') as file:
                 session = file.read()
             
+            if not session:
+                logger.warning(r'!--! NO SESSION KEY LOADED !--!')
+                break
+            
             user_agent = 'lewellync@github.com/1.0'
-            headers = {'User-Agent': user_agent}
+            headers = {'User-Agent': user_agent, 'session': session}
 
-            req = urllib.request.Request("https://adventofcode.com/{year}/day/{day}/input", headers)
+            # req = urllib.request.Request("https://adventofcode.com/{year}/day/{day}/input", headers)
 
             # create answer directory and files
-            FileHelper.create_answer_structure(WORKING_DIR, year, day, input)
+            FileHelper.create_answer_structure(WORKING_DIR, year, day)
 
             break
         case '2':
