@@ -1,2 +1,1 @@
-KNOWN ISSUES:
- - Path operations fail on POSIX systems
+Repository for all Advent Of Code problems
