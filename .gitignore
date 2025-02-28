@@ -1,3 +1,5 @@
 secrets/
 schema.md
 last_run.txt
+.vscode/*
+__pycache__
