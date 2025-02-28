@@ -2,7 +2,7 @@ import os, re
 
 def answer_one(input):
     cloth_length = 0
-    for line  in re.split(r'\n', input):
+    for line in re.split(r'\n', input):
         l, w, h = [int(x) for x in re.split(r'x', line)]
         len_wid = (l*w*2)
         wid_hei = (w*h*2)
@@ -11,7 +11,11 @@ def answer_one(input):
     print(cloth_length)
     
 def answer_two(input):
-    print("wow two!")
+    ribbon_length  = 0
+    for line in re.split(r'\n', input):
+        l, w, h = [int(x) for x in re.split(r'x', line)]
+        ribbon_length += (l*2+w*2+h*2) - (max([l,w,h])*2) + (l*w*h)
+    print(ribbon_length)
 
 if __name__ == "__main__":
     with open('input.txt', 'r') as file:
