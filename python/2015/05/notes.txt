@@ -1,0 +1,6 @@
+- 3 vowels
+- 1 double letter
+- no "ab, cd, pq, xy"
+
+- separated pair (put all pairs in list, check if current pair is in list minus most recent pair)
+- repeated letter with one other letter between, check -1 to see if not match and -2 to see if match
