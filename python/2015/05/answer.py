@@ -1,3 +1,4 @@
+import pprint
 import os, sys
 import re
 
@@ -10,17 +11,16 @@ def answer_one(input):
         double = False
         naughty = False
         for ind, char in enumerate(line):
+            if line[ind:ind+2] in bad_combos:
+                naughty = True
+                break    
             if char in vowels:
                 vowel_counter += 1
-            if ind < len(line) - 1:
-                if line[ind] == line[ind+1]:
-                    double = True
-                if f"{line[ind]}{line[ind+1]}" in bad_combos:
-                    naughty = True
-                    break
+            if ind > 0 and line[ind-1] == line[ind]:
+                double = True
         if double and vowel_counter >= 3 and not naughty:
             nice_strings += 1
-
+            
     print(nice_strings)
     
 def answer_two(input):
@@ -31,10 +31,10 @@ def answer_two(input):
         pairs = []
         for ind, char in enumerate(line):
             if not pair and ind > 0:
-                if f"{line[ind-1]}{char}" in pairs[:len(pairs)-1]:
+                if line[ind-1:ind] in pairs[:len(pairs)-1]:
                     pair = True
                 else:
-                    pairs.append(f"{line[ind-1]}{char}")
+                    pairs.append(line[ind-1:ind])
             if not jump and ind > 1:
                 if char is line[ind-2] and char is not line[ind-1]:
                     jump = True
