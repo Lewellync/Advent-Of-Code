@@ -24,10 +24,15 @@ def answer_one(input):
                 unicode_array[ind] += 1
                 break
         
-        # Check validity
+        # Illegal characters
+        if (set(invalid_chars) & set(unicode_array)):
+            invalid = True
+            continue
+        
+        # Pairs and Sequence
         pairs = []
         sequence = False
-        for ind, char in enumerate(unicode_array):
+        for ind in range(len(unicode_array)):
             if ind+1 < len(unicode_array) and ind not in pairs:
                 if unicode_array[ind] == unicode_array[ind+1]:
                     pairs += [ind, ind+1]
@@ -36,8 +41,8 @@ def answer_one(input):
                 if unicode_array[ind]+1 == unicode_array[ind+1] and unicode_array[ind+1] + 1 == unicode_array[ind+2]:
                     sequence = True
                     
-        if len(pairs) != 4 or (set(invalid_chars) & set(unicode_array)) or not sequence:
-            invalid = True        
+        if len(pairs) < 4 or not sequence:
+            invalid = True
          
     return ''.join([chr(x) for x in unicode_array])
 
